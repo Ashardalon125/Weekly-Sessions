@@ -69,3 +69,52 @@ def integrate(f,interval,steps,order=1,float_type=float):
     result = h*s
 
     return result, x_array, I_array
+
+
+def integral_adaptive (f,interval,tolerance,verbose=False):
+    """Runs a trapezoidal rule approximation that iterates until it creates a result within an accepted level of tolerance
+    
+    f:         The function being used
+    interval:  The region the function is over
+    tolerance: The target level of error
+    
+    n:         The number of steps it took to fall below the tolerance."""
+    
+    error=2*tolerance #Sets initial error greater than tolerance to ensure program runs
+    n=1               #Sets the start to one
+    (a,b)=interval    #Sets interval
+    inaught=(b-a)*0.5*(f(a)+f(b))
+    while(error>tolerance):
+        #Initializes old values
+        if(n==1):
+            iold=inaught
+            h=(b-a)/2
+        elif (n>=20):
+            break
+        else:
+            iold=inew
+            h/=2
+        
+        #Calculate new components
+        inew=0
+        for i in range(1,2**n,2):
+            inew+=f(a+i*h)
+            
+        inew=inew*h
+        inew+=iold/2
+        
+        
+        #Calculate error
+        error=np.abs((inew-iold)/3)
+        n+=1
+        
+        if (verbose==True):
+            print("Run #",n-1)
+            print("Power is: 2 ^",n-1)
+            print("Old Integral is:",iold)
+            print("New Integral is:",inew)
+            print("The error is:",error)
+            print(" ")
+    if (verbose==False):
+        print("The integral is",inew)
+    return n
